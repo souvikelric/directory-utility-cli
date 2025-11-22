@@ -55,7 +55,7 @@ func getDirSize(path string) int64 {
 	return totalSize
 }
 
-// sort by provided FileInfo Size field
+// sort by provided FileInfo field
 func sortFilesByField(files []FileInfo, field string) {
 
 	switch field { 
@@ -140,37 +140,46 @@ func main(){
 	flag.BoolVar(&only_files,"lf",false,"list only files")
 	var sort_by string
 	flag.StringVar(&sort_by,"sort","size","sort by field: size/date/name")
+	var dir string
+	flag.StringVar(&dir,"dir","","(not used) specify directory path")
 
 	flag.Parse()
 
-	home_dir , err := os.UserHomeDir()
+	var downloads_path string
 
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
+	if dir == ""{
+		home_dir , err := os.UserHomeDir()
 
-	//fmt.Println("User Home Directory:", home_dir)
-	user_dir_files, err := os.ReadDir(home_dir)
-
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	//fmt.Println("Files and Directories in User Home Directory:")
-	found_downloads := false
-	for _, file := range user_dir_files {
-		if file.IsDir() && file.Name() == "Downloads" {
-			found_downloads = true
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
 		}
-	}
-	if !found_downloads {
-		fmt.Println("Downloads directory not found in user home directory.")
-		return
+
+		//fmt.Println("User Home Directory:", home_dir)
+		user_dir_files, err := os.ReadDir(home_dir)
+
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		//fmt.Println("Files and Directories in User Home Directory:")
+		found_downloads := false
+		for _, file := range user_dir_files {
+			if file.IsDir() && file.Name() == "Downloads" {
+				found_downloads = true
+			}
+		}
+		if !found_downloads {
+			fmt.Println("Downloads directory not found in user home directory.")
+			return
+		}
+
+		downloads_path = filepath.Join(home_dir,"Downloads")
+	} else {
+		downloads_path = dir
 	}
 
-	downloads_path := filepath.Join(home_dir,"Downloads")
 	all_files := getAllFilesInDir(downloads_path,sort_by)
 	slices.Reverse(all_files)
 
