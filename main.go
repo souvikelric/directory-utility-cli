@@ -8,6 +8,8 @@ import (
 	"slices"
 	"sort"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 type FileInfo struct {
@@ -113,12 +115,15 @@ func getAllFilesInDir(dirPath string, sortBy string) []FileInfo {
 }
 
 func printFilesInfo(files []FileInfo) {
-	for _, file := range files {
-		icon := "[FILE]"
+	for _, file := range files{
+		c:=color.New(color.Italic)
+		icon := c.Sprint("[file]")
 		if file.IsDir {
-			icon = "[DIR]"
-		}
-		fmt.Printf("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
+			icon := c.Sprint("[dir]")
+			color.Magenta("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
+		} else{
+			color.Cyan("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
+		}	
 	}
 }
 
@@ -205,6 +210,8 @@ func main(){
 		all_files = all_files[:top]
 	}
 
+	fmt.Println()
 	printFilesInfo(all_files)
+	fmt.Println()
 
 }
