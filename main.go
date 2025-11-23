@@ -6,104 +6,12 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"sort"
 
-	"github.com/fatih/color"
 	"github.com/souvikelric/dirclean/models"
-	scan "github.com/souvikelric/dirclean/scanner"
+	"github.com/souvikelric/dirclean/utility"
 )
 
-
-func formatSize(size int64) string {
-	sizes := []string{"B", "KB", "MB", "GB", "TB"}
-	i := 0
-	floatSize := float64(size)
-
-	for floatSize >= 1024 && i < len(sizes)-1 {
-		floatSize /= 1024
-		i++
-	}
-
-	return fmt.Sprintf("%.2f %s", floatSize, sizes[i])
-}
-
-//get size of directory by summing sizes of all files within it
-
-
-// sort by provided FileInfo field
-func sortFilesByField(files []models.FileInfo, field string) {
-
-	switch field { 
-	case "size":
-		sort.Slice(files,func(i,j int) bool {
-		return files[i].Size < files[j].Size
-		})
-	case "name":
-		sort.Slice(files,func(i,j int) bool {
-		return files[i].Name < files[j].Name
-		})
-	case "date":
-		// sort by file modified time
-		sort.Slice(files,func(i,j int) bool {
-		return files[i].LastModified.Before(files[j].LastModified)
-		})
-	default:
-		fmt.Println("Invalid sort field. Supported fields are: size, name, date")
-	}
-	
-}
-
-func getAllFilesInDir(dirPath string, sortBy string) []models.FileInfo {
-	downloads_files, err := os.ReadDir(dirPath)
-	files := []models.FileInfo{}
-
-	var size int64 = 0
-
-	if err != nil {
-		fmt.Println("Error:", err)
-		return nil
-	}
-	for _, file := range downloads_files {
-		fileInfo, err := file.Info()
-		if err != nil {
-			fmt.Println("Error:", err)
-			continue
-		}
-		
-		if file.IsDir(){
-			size = scan.GetDirSize(filepath.Join(dirPath,file.Name()))
-		} else {
-			size = fileInfo.Size()
-		}
-
-		files = append(files, models.FileInfo{
-			Name:          file.Name(),
-			Size:          size,
-			IsDir:         file.IsDir(),
-			FormattedSize: formatSize(size),
-			LastModified: fileInfo.ModTime(),
-		})
-	}
-	sortFilesByField(files,sortBy)
-
-	return files
-}
-
-func printFilesInfo(files []models.FileInfo) {
-	for _, file := range files{
-		c:=color.New(color.Italic)
-		icon := c.Sprint("[file]")
-		if file.IsDir {
-			icon := c.Sprint("[dir]")
-			color.Magenta("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
-		} else{
-			color.Cyan("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
-		}	
-	}
-}
-
 func main(){
-
 	//defining flag variables to be accepted from command line
 	var top int64
 	flag.Int64Var(&top,"top",0,"lists top n values")
@@ -155,7 +63,7 @@ func main(){
 		downloads_path = dir
 	}
 
-	all_files := getAllFilesInDir(downloads_path,sort_by)
+	all_files := utility.GetAllFilesInDir(downloads_path,sort_by)
 	slices.Reverse(all_files)
 
 	if only_dirs {
@@ -195,7 +103,7 @@ func main(){
 	}
 
 	fmt.Println()
-	printFilesInfo(all_files)
+	utility.PrintFilesInfo(all_files)
 	fmt.Println()
 
 }
