@@ -25,6 +25,8 @@ func main(){
 	flag.StringVar(&sort_by,"sort","size","sort by field: size/date/name")
 	var dir string
 	flag.StringVar(&dir,"dir","","(not used) specify directory path")
+	var command string
+	flag.StringVar(&command,"cmd","list","command to execute: move/delete")
 
 	flag.Parse()
 
@@ -105,5 +107,9 @@ func main(){
 	fmt.Println()
 	utility.PrintFilesInfo(all_files)
 	fmt.Println()
+
+	if command == "delete" || command == "del" {
+		utility.ConfirmAndDeleteFiles(dir, all_files)
+	}
 
 }
