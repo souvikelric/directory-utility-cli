@@ -7,18 +7,11 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
-	"time"
 
 	"github.com/fatih/color"
+	"github.com/souvikelric/dirclean/models"
 )
 
-type FileInfo struct {
-	Name string
-	Size int64
-	IsDir bool
-	LastModified time.Time
-	FormattedSize string
-}
 
 func formatSize(size int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB"}
@@ -56,7 +49,7 @@ func getDirSize(path string) int64 {
 }
 
 // sort by provided FileInfo field
-func sortFilesByField(files []FileInfo, field string) {
+func sortFilesByField(files []models.FileInfo, field string) {
 
 	switch field { 
 	case "size":
@@ -78,9 +71,9 @@ func sortFilesByField(files []FileInfo, field string) {
 	
 }
 
-func getAllFilesInDir(dirPath string, sortBy string) []FileInfo {
+func getAllFilesInDir(dirPath string, sortBy string) []models.FileInfo {
 	downloads_files, err := os.ReadDir(dirPath)
-	files := []FileInfo{}
+	files := []models.FileInfo{}
 
 	var size int64 = 0
 
@@ -101,7 +94,7 @@ func getAllFilesInDir(dirPath string, sortBy string) []FileInfo {
 			size = fileInfo.Size()
 		}
 
-		files = append(files, FileInfo{
+		files = append(files, models.FileInfo{
 			Name:          file.Name(),
 			Size:          size,
 			IsDir:         file.IsDir(),
@@ -114,7 +107,7 @@ func getAllFilesInDir(dirPath string, sortBy string) []FileInfo {
 	return files
 }
 
-func printFilesInfo(files []FileInfo) {
+func printFilesInfo(files []models.FileInfo) {
 	for _, file := range files{
 		c:=color.New(color.Italic)
 		icon := c.Sprint("[file]")
@@ -184,7 +177,7 @@ func main(){
 	slices.Reverse(all_files)
 
 	if only_dirs {
-		filtered_dirs := []FileInfo{}
+		filtered_dirs := []models.FileInfo{}
 		for _, file := range all_files {
 			if file.IsDir {
 				filtered_dirs = append(filtered_dirs, file)
@@ -194,7 +187,7 @@ func main(){
 	} else {
 
 		if only_files {
-			filtered_files := []FileInfo{}
+			filtered_files := []models.FileInfo{}
 			for _, file := range all_files {
 				if !file.IsDir {
 					filtered_files = append(filtered_files, file)
@@ -205,7 +198,7 @@ func main(){
 
 		if ext != "all" {
 			ext = "." + ext
-			filtered_files := []FileInfo{}
+			filtered_files := []models.FileInfo{}
 			for _, file := range all_files {
 				if !file.IsDir && filepath.Ext(file.Name) == ext{
 					filtered_files = append(filtered_files, file)
