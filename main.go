@@ -10,6 +10,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/souvikelric/dirclean/models"
+	scan "github.com/souvikelric/dirclean/scanner"
 )
 
 
@@ -27,26 +28,7 @@ func formatSize(size int64) string {
 }
 
 //get size of directory by summing sizes of all files within it
-func getDirSize(path string) int64 {
-	var totalSize int64 = 0
 
-	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !info.IsDir() {
-			totalSize += info.Size()
-		}
-		return nil
-	})
-
-	if err != nil {
-		fmt.Println("Error:", err)
-		return 0
-	}
-
-	return totalSize
-}
 
 // sort by provided FileInfo field
 func sortFilesByField(files []models.FileInfo, field string) {
@@ -89,7 +71,7 @@ func getAllFilesInDir(dirPath string, sortBy string) []models.FileInfo {
 		}
 		
 		if file.IsDir(){
-			size = getDirSize(filepath.Join(dirPath,file.Name()))
+			size = scan.GetDirSize(filepath.Join(dirPath,file.Name()))
 		} else {
 			size = fileInfo.Size()
 		}
