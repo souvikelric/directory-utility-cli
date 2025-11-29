@@ -33,6 +33,8 @@ func main(){
 
 	flag.Parse()
 
+	
+
 	var downloads_path string
 
 	if dir == ""{
@@ -66,6 +68,10 @@ func main(){
 		downloads_path = filepath.Join(home_dir,"Downloads")
 	} else {
 		downloads_path = dir
+	}
+
+	if len(flag.Args()) > 0 && flag.Args()[0] == "tidy"{
+		cmd.TidyFiles(downloads_path)
 	}
 
 	all_files := utility.GetAllFilesInDir(downloads_path,sort_by)
