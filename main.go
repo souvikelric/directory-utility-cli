@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"slices"
 
+	cmd "github.com/souvikelric/dirclean/command"
 	"github.com/souvikelric/dirclean/models"
 	"github.com/souvikelric/dirclean/utility"
 )
@@ -109,7 +110,7 @@ func main(){
 	fmt.Println()
 
 	if command == "delete" || command == "del" {
-		utility.ConfirmAndDeleteFiles(dir, all_files)
+		cmd.ConfirmAndDeleteFiles(dir, all_files)
 	}
 
 }
