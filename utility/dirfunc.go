@@ -52,7 +52,11 @@ func PrintFilesInfo(files []models.FileInfo) {
 		icon := c.Sprint("[file]")
 		if file.IsDir {
 			icon := c.Sprint("[dir]")
-			color.Magenta("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
+			if file.Name[0] == '.' {
+				color.HiYellow("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
+			} else {
+				color.Magenta("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
+			}
 		} else{
 			color.Cyan("%s %s - %s (%s)\n", icon, file.Name, file.FormattedSize,file.LastModified.Format("2006-01-02 15:04:05"))
 		}	
