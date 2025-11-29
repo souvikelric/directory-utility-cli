@@ -113,7 +113,7 @@ func main(){
 
 	switch command {
 		case "delete", "del":
-			cmd.ConfirmAndDeleteFiles(dir, all_files)
+			cmd.ConfirmAndDeleteFiles(dir, all_files,true)
 		case "copy":
 			err := cmd.CopyFiles(downloads_path, all_files, dest)
 			if err != nil {
@@ -122,7 +122,12 @@ func main(){
 				fmt.Println("Files copied successfully.")
 			}
 		case "move":
-			return
+			err := cmd.CopyFiles(downloads_path, all_files, dest)
+			if err != nil {
+				fmt.Println("Error copying files:", err)
+				return
+			}
+			cmd.ConfirmAndDeleteFiles(dir,all_files,false)
 		default:
 			return
 	}
