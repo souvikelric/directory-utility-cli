@@ -65,6 +65,15 @@ func CopyFiles(dir string, srcFiles []models.FileInfo, destPath string) error {
 		srcFilePath := filepath.Join(dir, file.Name)
 		destFilePath := filepath.Join(destPath, file.Name)
 
+		_,err := os.Stat(destFilePath)
+		if !os.IsExist(err) {
+			//create destination directory if not exists
+			err := os.MkdirAll(destPath, os.ModePerm)
+			if err != nil {
+				return err
+			}	
+		}
+
 		//copy directories and all files and subdirectories inside it
 		if file.IsDir {
 			err := copyDirectory(srcFilePath, destFilePath)
