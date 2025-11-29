@@ -29,7 +29,7 @@ func main(){
 	var command string
 	flag.StringVar(&command,"cmd","list","command to execute: move/delete/copy")
 	var dest string
-	flag.StringVar(&dest,"dest","","(for copy/move command ) specify destination path")
+	flag.StringVar(&dest,"dest","","(for copy/move command) specify destination path")
 
 	flag.Parse()
 
@@ -122,12 +122,7 @@ func main(){
 				fmt.Println("Files copied successfully.")
 			}
 		case "move":
-			err := cmd.CopyFiles(downloads_path, all_files, dest)
-			if err != nil {
-				fmt.Println("Error copying files:", err)
-				return
-			}
-			cmd.ConfirmAndDeleteFiles(dir,all_files,false)
+			cmd.MoveFiles(downloads_path,all_files,dest)
 		default:
 			return
 	}
